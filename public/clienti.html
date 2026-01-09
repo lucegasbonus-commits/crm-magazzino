@@ -1,1 +1,83 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Clienti</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+<div class="app">
+
+  <aside class="sidebar">
+    <h2>CRM</h2>
+    <nav>
+      <a href="/">Dashboard</a>
+      <a class="active">Clienti</a>
+      <a>Agenti</a>
+      <a>Vendite</a>
+      <a>Magazzino</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <h1>Clienti</h1>
+    </header>
+
+    <section class="content">
+      <h3>Nuovo cliente</h3>
+      <form id="clienteForm">
+        <input placeholder="Nome" name="nome" required>
+        <input placeholder="Telefono" name="telefono">
+        <input placeholder="Email" name="email">
+        <button>Aggiungi</button>
+      </form>
+
+      <h3 style="margin-top:30px">Elenco clienti</h3>
+      <table id="tabellaClienti" style="width:100%; margin-top:10px">
+        <tr>
+          <th>Nome</th>
+          <th>Telefono</th>
+          <th>Email</th>
+        </tr>
+      </table>
+    </section>
+  </main>
+
+</div>
+
+<script>
+fetch("/clienti")
+  .then(res => res.json())
+  .then(clienti => {
+    const tabella = document.getElementById("tabellaClienti");
+    clienti.forEach(c => {
+      tabella.innerHTML += `
+        <tr>
+          <td>${c.nome}</td>
+          <td>${c.telefono || ""}</td>
+          <td>${c.email || ""}</td>
+        </tr>
+      `;
+    });
+  });
+
+document.getElementById("clienteForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const form = e.target;
+
+  fetch("/clienti", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      nome: form.nome.value,
+      telefono: form.telefono.value,
+      email: form.email.value
+    })
+  }).then(() => location.reload());
+});
+</script>
+
+</body>
+</html>
