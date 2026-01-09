@@ -1,3 +1,6 @@
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+const fs = require("fs");
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const app = express();
@@ -100,6 +103,24 @@ app.post("/clienti", (req, res) => {
     [nome, telefono, email],
     () => res.json({ ok: true })
   );
+});
+// IMPORT CLIENTI DA CSV
+app.post("/clienti/import", upload.single("file"), (req, res) => {
+  const file = fs.readFileSync(req.file.path, "utf8");
+  const righe = file.split("\n");
+
+  righe.slice(1).forEach(riga => {
+    const [nome, telefono, email] = riga.split(",");
+    if (nome) {
+      db.run(
+        "INSERT INTO clienti (nome, telefono, email) VALUES (?, ?, ?)",
+        [nome.trim(), telefono?.trim(), email?.trim()]
+      );
+    }
+  });
+
+  fs.unlinkSync(req.file.path);
+  res.redirect("/clienti.html");
 });
 
 app.listen(PORT, () => {
