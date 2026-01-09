@@ -72,7 +72,8 @@ app.post("/vendita", (req, res) => {
     () => res.json({ ok: true })
   );
 });
+const PORT = process.env.PORT || 3000;
 
-app.listen(3000, () => {
-  console.log("CRM attivo su http://localhost:3000");
+app.listen(PORT, () => {
+  console.log("CRM attivo sulla porta " + PORT);
 });
