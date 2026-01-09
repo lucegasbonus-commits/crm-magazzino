@@ -9,6 +9,14 @@ app.use(express.static("public"));
 const db = new sqlite3.Database("crm.db");
 
 // TABELLE
+db.run(`
+  CREATE TABLE IF NOT EXISTS clienti (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT,
+    telefono TEXT,
+    email TEXT
+  )
+`);
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS articoli (
@@ -76,6 +84,22 @@ app.post("/vendita", (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.get("/", (req, res) => {
   res.send("CRM attivo");
+});
+// LISTA CLIENTI
+app.get("/clienti", (req, res) => {
+  db.all("SELECT * FROM clienti", (err, rows) => {
+    res.json(rows);
+  });
+});
+
+// CREA CLIENTE
+app.post("/clienti", (req, res) => {
+  const { nome, telefono, email } = req.body;
+  db.run(
+    "INSERT INTO clienti (nome, telefono, email) VALUES (?, ?, ?)",
+    [nome, telefono, email],
+    () => res.json({ ok: true })
+  );
 });
 
 app.listen(PORT, () => {
