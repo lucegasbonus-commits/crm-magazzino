@@ -73,6 +73,9 @@ app.post("/vendita", (req, res) => {
   );
 });
 const PORT = process.env.PORT || 3000;
+app.get("/", (req, res) => {
+  res.send("CRM attivo");
+});
 
 app.listen(PORT, () => {
   console.log("CRM attivo sulla porta " + PORT);
